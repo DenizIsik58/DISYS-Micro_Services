@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -26,31 +25,39 @@ func courseHandler(w http.ResponseWriter, r *http.Request) {
 		rating := r.FormValue("satisfaction_rating_avg")
 		satisFactionrating, _ := strconv.Atoi(rating)
 
-		courses = append(courses, &Course{Students: make([]Student, 0), Name: name, Teachers: make([]Teacher, 0), SatisfactionRatingAvg: satisFactionrating})
+		courses = append(courses, &Course{Students: make([]*Student, 0), Name: name, Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: satisFactionrating})
 		return
 	}
 
 	if r.Method == "PUT" {
 		// Add a student to a course
-		studentId := r.Form.Get("student_id")
-		courseName := r.Form.Get("course_name")
-		teacherId := r.Form.Get("teacher_id")
+		studentId := r.FormValue("student_id")
+		studentIdToInt, _ := strconv.Atoi(studentId)
 
-		if !courseExists(courseName) {
-			fmt.Println("This course doesn't exsits")
-			return
+		teacherId := r.FormValue("teacher_id")
+		teacherIdToInt, _ := strconv.Atoi(teacherId)
+
+		studentName := r.FormValue("student_name")
+		courseName := r.FormValue("course_name")
+
+		teacher := getTeacherById(teacherIdToInt)
+
+		student := getStudentById(studentIdToInt)
+
+		course := getCourseByName(courseName)
+
+		if student == nil {
+			student = addStudent(studentName)
 		}
-		if studentExistsInCourse(courseName) || teacherExistsInCourse(courseName) {
-			return
+			course.Students = append (course.Students, student)
+
+
+		if teacher == nil {
+			teacher = addTeacher(studentName)
 		}
-		addStudentToCourse(studentId, courseName)
+			course.Teachers = append(course.Teachers, teacher)
 
-		// Add a teacher to a course
-
-		addTeacherToCourse(teacherId, courseName)
-
-
-
+		return
 	}
 	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 }
@@ -63,22 +70,16 @@ func studentHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 		name := r.Form.Get("name")
-		append(students, &Student{Id: len(students) + 1, Name: name, Courses: make([]Course, 0)})
+		students = append(students, &Student{Id: len(students) + 1, Name: name, Courses: make([]Course, 0)})
 	}
 
-	if r.Method == "POST" {
-		name := r.Form.Get("name")
-		append(students, &Student{Id: len(students) + 1, Name: name, Courses: make([]Course, 0)})
-
-
-	}
 	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 }
 
 func main() {
 	fmt.Println("Starting now...")
 
-	courses = append(courses, &Course{Students: make([]Student, 0), Name: "DISYS", Teachers: make([]Teacher, 0), SatisfactionRatingAvg: 10})
+	courses = append(courses, &Course{Students: make([]*Student, 0), Name: "DISYS", Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: 10})
 	http.HandleFunc("/courses", courseHandler)
 	http.HandleFunc("/students", studentHandler)
 
@@ -86,87 +87,41 @@ func main() {
 
 }
 
-func addStudent(Id int, name string, courses []Course) {
-	students = append(students, &Student{Id, name, courses})
-}
-
-func getStudent(index int) *Student {
-	return students[index]
-}
-
-func studentExists(student *Student) bool {
-	for i := 0; i < len(students); i++ {
-		if students[i] == student {
-			return false
-		}
-	}
-	return true
-}
-
-func teacherExists(teacher *Teacher) bool {
-	for i := 0; i < len(students); i++ {
-		if teachers[i] == teacher {
-			return false
-		}
-	}
-	return true
-}
-
-func courseExists(courseName string) bool{
-	for i:=0; i < len(courses); i++ {
-		if courses[i].Name == courseName {
-			return true
-		}
-	}
-	return false
-}
-
-func studentExistsInCourse(courseName string) bool{
+func getStudentById(id int) *Student {
 	for i:=0; i < len(students); i++ {
-		for j := 0; j < len(students[i].Courses); j++ {
-			if students[i].Courses[j].Name == courseName {
-				return false
-			}
+		if students[i].Id == id {
+			return students[i]
 		}
 	}
-	return true
+	return nil
 }
 
-func teacherExistsInCourse(courseName string) bool{
+func getCourseByName(name string) *Course{
+	for _, course := range courses {
+		if course.Name == name {
+			return course
+		}
+	}
+	return nil
+}
+
+func getTeacherById(id int) *Teacher {
 	for i:=0; i < len(teachers); i++ {
-		for j := 0; j < len(teachers[i].Courses); j++ {
-			if teachers[i].Courses[j].Name == courseName {
-				return false
-			}
+		if teachers[i].Id == id {
+			return teachers[i]
 		}
 	}
-	return true
+	return nil
 }
 
-func addStudentToCourse(studentId int, courseName string)  {
-
-	if !studentExists(students[studentId]) {
-		errors.New("this student doesn't exists")
-	}
-
-	for i := 0; i < len(courses); i++ {
-		if courses[i].Name == courseName {
-			append(students[studentId].Courses, *courses[i])
-		}
-	}
+func addStudent(name string) *Student{
+	student := Student{Id: len(students) + 1, Name: name, Courses: make([]Course, 0)}
+	students = append(students, &student)
+	return &student
 }
 
-func addTeacherToCourse(teacherId int, courseName string) (*Course, error) {
-
-	if !teacherExists(teachers[teacherId]) {
-		errors.New("this teacher doesn't exists")
-	}
-
-	for i := 0; i < len(courses); i++ {
-		if courses[i].Name == courseName {
-			append(teachers[teacherId].Courses, *courses[i])
-			return courses[i], errors.New("")
-		}
-	}
-	return nil, errors.New("this course does not Exists")
+func addTeacher(name string) *Teacher{
+	teacher := Teacher{Id: len(students) + 1, Name: name, Courses: make([]Course, 0)}
+	teachers = append(teachers, &teacher)
+	return &teacher
 }
