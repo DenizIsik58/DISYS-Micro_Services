@@ -1,8 +1,8 @@
 package main
 
 type Teacher struct {
-	id               int      `json:"teacher_id"`
-	name             string   `json:"name"`
-	courses          []Course `json:"courses"`
-	popularity_score float64  `json:"popularity_score"`
+	Id               int      `json:"teacher_id"`
+	Name             string   `json:"name"`
+	Courses         []Course `json:"courses"`
+	PopularityScore float64  `json:"popularity_score"`
 }

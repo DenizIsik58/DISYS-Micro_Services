@@ -6,3 +6,4 @@ type Course struct {
 	Teachers              []Teacher `json:"teachers"`
 	SatisfactionRatingAvg int       `json:"satisfaction_rating_avg"`
 }
+
