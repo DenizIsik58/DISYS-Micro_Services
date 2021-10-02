@@ -1,10 +1,7 @@
-package Micro_Services
-
-
+package main
 
 type Student struct {
-	id int `json:"student_id"`
-	name string `json:"name"`
-	course_workload []Course `json:"courses"`
-
+	Id      int      `json:"id"`
+	Name    string   `json:"name"`
+	Courses []Course `json:"courses"`
 }

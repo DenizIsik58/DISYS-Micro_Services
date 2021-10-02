@@ -1,11 +1,7 @@
-package Micro_Services
-
+package main
 
 type Course struct {
-	teachers []Teacher `json:"teachers"`
-	satisfaction_rating_AVG float64 `json:"satisfaction_rate_AVG"`
-	student_enrollment int `json:"student_enrollment"`
-
+	Student               []Student `json:"students"`
+	Teachers              []Teacher `json:"teachers"`
+	SatisfactionRatingAvg float64   `json:"satisfaction_rating_avg"`
 }
-
-
