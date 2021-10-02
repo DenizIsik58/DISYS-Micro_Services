@@ -1,7 +1,8 @@
 package main
 
 type Course struct {
-	Student               []Student `json:"students"`
+	Name                  string    `json:"name"`
+	Students              []Student `json:"students"`
 	Teachers              []Teacher `json:"teachers"`
-	SatisfactionRatingAvg float64   `json:"satisfaction_rating_avg"`
+	SatisfactionRatingAvg int       `json:"satisfaction_rating_avg"`
 }
