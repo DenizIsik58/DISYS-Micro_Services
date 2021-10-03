@@ -59,6 +59,22 @@ func courseHandler(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	if r.Method == "DELETE" {
+		courseName := r.FormValue("course_name")
+		course := getCourseByName(courseName)
+
+		if course != nil {
+			for i := 0; i < len(courses); i++ {
+				if courses[i].Name == courseName {
+					courses = append (courses[:i], courses[i+1:]...)
+				}
+			}
+		}else if course == nil {
+			http.Error(w, "this course doesn't exists", http.StatusNotFound)
+		}
+	}
+
 	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 }
 
@@ -87,6 +103,8 @@ func main() {
 
 }
 
+
+
 func getStudentById(id int) *Student {
 	for i:=0; i < len(students); i++ {
 		if students[i].Id == id {
@@ -103,6 +121,14 @@ func getCourseByName(name string) *Course{
 		}
 	}
 	return nil
+}
+
+func deleteCourseByName(name string) {
+	for i := 0; i < len(courses); i++ {
+		if courses[i].Name == name {
+			courses = append (courses[:i], courses[i+1:]...)
+		}
+	}
 }
 
 func getTeacherById(id int) *Teacher {
