@@ -78,31 +78,15 @@ func courseHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 }
 
-func studentHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		json.NewEncoder(w).Encode(courses)
-		return
-	}
-
-	if r.Method == "POST" {
-		name := r.Form.Get("name")
-		students = append(students, &Student{Id: len(students) + 1, Name: name, Courses: make([]Course, 0)})
-	}
-
-	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-}
 
 func main() {
 	fmt.Println("Starting now...")
 
 	courses = append(courses, &Course{Students: make([]*Student, 0), Name: "DISYS", Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: 10})
 	http.HandleFunc("/courses", courseHandler)
-	http.HandleFunc("/students", studentHandler)
 
 	log.Fatal(http.ListenAndServe(":7000", nil))
-
 }
-
 
 
 func getStudentById(id int) *Student {
@@ -121,14 +105,6 @@ func getCourseByName(name string) *Course{
 		}
 	}
 	return nil
-}
-
-func deleteCourseByName(name string) {
-	for i := 0; i < len(courses); i++ {
-		if courses[i].Name == name {
-			courses = append (courses[:i], courses[i+1:]...)
-		}
-	}
 }
 
 func getTeacherById(id int) *Teacher {
