@@ -3,13 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"math"
 	"net/http"
 	"strconv"
-	"strings"
-
-	"github.com/gorilla/mux"
 )
 
 var courses = make([]*Course, 0)
@@ -95,7 +93,7 @@ func courseDeleteTeacherStudentHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(math.MaxInt)
 
 	removed := false
-	searchType := strings.ToUpper(r.FormValue("type"))
+	searchType, _ := vars["type"]
 
 	if searchType == "TEACHER" {
 		teacherId, error := strconv.Atoi(vars["id"])
@@ -119,7 +117,7 @@ func courseDeleteTeacherStudentHandler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
-	} else {
+	} else if searchType == "STUDENT" {
 		studentId, error := strconv.Atoi(vars["id"])
 
 		if error != nil {
@@ -227,7 +225,7 @@ func main() {
 	courses = append(courses, &Course{Students: make([]*Student, 0), Name: "DISYS", Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: 10})
 
 	r := mux.NewRouter()
-	r.HandleFunc("/courses/{courseId}/{id}", courseDeleteTeacherStudentHandler).Methods("DELETE")
+	r.HandleFunc("/courses/{courseId}/{id}/{type}", courseDeleteTeacherStudentHandler).Methods("DELETE")
 	r.HandleFunc("/courses/{courseId}/{id}", coursePutTeacherStudentHandler).Methods("PUT")
 	r.HandleFunc("/courses/{courseId}", courseDeleteHandler).Methods("DELETE")
 	r.HandleFunc("/courses/{courseId}", coursePutHandler).Methods("PUT")
