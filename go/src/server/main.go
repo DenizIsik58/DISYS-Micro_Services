@@ -33,8 +33,9 @@ func coursePutTeacherStudentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.ParseMultipartForm(math.MaxInt)
+	searchType := vars["type"]
 
-	if r.FormValue("type") == "teacher" {
+	if searchType == "TEACHER" {
 		teacherId, error := strconv.Atoi(vars["id"])
 
 		if error != nil {
@@ -50,7 +51,7 @@ func coursePutTeacherStudentHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		course.Teachers = append(course.Teachers, teacher)
-	} else {
+	} else if searchType == "STUDENT"{
 		studentId, error := strconv.Atoi(vars["id"])
 
 		if error != nil {
@@ -225,8 +226,8 @@ func main() {
 	courses = append(courses, &Course{Students: make([]*Student, 0), Name: "DISYS", Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: 10})
 
 	r := mux.NewRouter()
-	r.HandleFunc("/courses/{courseId}/{id}/{type}", courseDeleteTeacherStudentHandler).Methods("DELETE")
-	r.HandleFunc("/courses/{courseId}/{id}", coursePutTeacherStudentHandler).Methods("PUT")
+	r.HandleFunc("/courses/{courseId}/{type}/{id}", courseDeleteTeacherStudentHandler).Methods("DELETE")
+	r.HandleFunc("/courses/{courseId}/{type}/{id}", coursePutTeacherStudentHandler).Methods("PUT")
 	r.HandleFunc("/courses/{courseId}", courseDeleteHandler).Methods("DELETE")
 	r.HandleFunc("/courses/{courseId}", coursePutHandler).Methods("PUT")
 	r.HandleFunc("/courses", coursePostHandler).Methods("POST")
