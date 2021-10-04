@@ -105,7 +105,7 @@ func deleteCourse(courseID string) {
 }
 
 func deleteTeacherStudent(enrollmentType string, id string, courseId string) {
-	_, err := http.NewRequest("DELETE", URL+"/courses"+courseId+"/"+id+"/"+enrollmentType, nil)
+	_, err := http.NewRequest("DELETE", URL+"/courses"+courseId+"/"+enrollmentType+ "/" + id, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
