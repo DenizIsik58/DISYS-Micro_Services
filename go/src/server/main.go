@@ -211,11 +211,12 @@ func main() {
 }
 
 func getStudentById(id int) *Student {
-	for i := 0; i < len(students); i++ {
-		if students[i].Id == id {
-			return students[i]
+	for _, student := range students {
+		if student.Id == id {
+			return student
 		}
 	}
+
 	return nil
 }
 
@@ -230,9 +231,9 @@ func getCourseById(id int) *Course {
 }
 
 func getTeacherById(id int) *Teacher {
-	for i := 0; i < len(teachers); i++ {
-		if teachers[i].Id == id {
-			return teachers[i]
+	for _, teacher := range teachers {
+		if teacher.Id == id {
+			return teacher
 		}
 	}
 
