@@ -118,7 +118,7 @@ func changeNameOfCourse(newCourseName string, courseId string) {
 	jsonStr := "{title:" + newCourseName + "}"
 
 
-	_, err := http.NewRequest("PUT", URL+"/courses" + courseId, bytes.NewReader([]byte(jsonStr)))
+	_, err := http.NewRequest("PUT", URL+"/courses/" + courseId, bytes.NewReader([]byte(jsonStr)))
 
 	if err != nil {
 		fmt.Println(err)
