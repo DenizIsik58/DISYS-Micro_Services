@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	_ "encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -33,12 +32,9 @@ func main() {
 
 	sb := string(body)
 	log.Printf(sb)
-
-
 }
 
-
-func addCourse(courseName string, rate int) url.Values{
+func addCourse(courseName string, rate int) url.Values {
 	data := url.Values{
 		"name":                    {courseName},
 		"students":                {},
@@ -49,7 +45,7 @@ func addCourse(courseName string, rate int) url.Values{
 }
 
 func post() {
-	response, err := http.PostForm("http://localhost:7000/courses", addCourse("bdsa",10))
+	response, err := http.PostForm("http://localhost:7000/courses", addCourse("bdsa", 10))
 
 	if err != nil {
 		log.Fatal(err)
@@ -60,4 +56,3 @@ func post() {
 	json.NewDecoder(response.Body).Decode(&res)
 
 }
-
