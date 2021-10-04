@@ -180,6 +180,32 @@ func courseDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
+func coursePutHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	courseId, error := strconv.Atoi(vars["courseId"])
+
+	if error != nil {
+		http.Error(w, "{\"error\": \"INVALID_ID\"}", http.StatusForbidden)
+		return
+	}
+
+	course := getCourseById(courseId)
+
+	if course == nil {
+		http.Error(w, "{\"error\": \"COURSE_NOT_FOUND\"}", http.StatusNotFound)
+		return
+	}
+
+	r.ParseMultipartForm(math.MaxInt)
+
+	name := r.FormValue("name")
+
+	if name != "" {
+		course.Name = name
+	}
+}
+
 func coursePostHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(math.MaxInt)
 
@@ -201,11 +227,12 @@ func main() {
 	courses = append(courses, &Course{Students: make([]*Student, 0), Name: "DISYS", Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: 10})
 
 	r := mux.NewRouter()
-	r.HandleFunc("/courses/{courseId}/{id}", coursePutTeacherStudentHandler).Methods("PUT")
 	r.HandleFunc("/courses/{courseId}/{id}", courseDeleteTeacherStudentHandler).Methods("DELETE")
-	r.HandleFunc("/courses", courseGetHandler).Methods("GET")
-	r.HandleFunc("/courses", coursePostHandler).Methods("POST")
+	r.HandleFunc("/courses/{courseId}/{id}", coursePutTeacherStudentHandler).Methods("PUT")
 	r.HandleFunc("/courses/{courseId}", courseDeleteHandler).Methods("DELETE")
+	r.HandleFunc("/courses/{courseId}", coursePutHandler).Methods("PUT")
+	r.HandleFunc("/courses", coursePostHandler).Methods("POST")
+	r.HandleFunc("/courses", courseGetHandler).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":7000", r))
 }
