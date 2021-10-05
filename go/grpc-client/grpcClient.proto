@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+
+    service grpcClient {
+rpc CourseToString  (Course) returns (Course){}
+rpc ReplyCourseToString (Course) returns (CourseReply){}
+    }
+
+
+message Course{
+  int32 course_Id = 1;
+  string course_name = 2;
+  int32 satisfaction_rating = 3;
+}
+
+option go_package = "./DISYS-Micro_Services/go/grpc-Client;grpc_Client";
+
+message CourseReply {
+  string message = 1;
+}
