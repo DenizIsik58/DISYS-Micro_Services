@@ -1,10 +1,10 @@
 syntax = "proto3";
 
 
-    service grpcClient {
-rpc CourseToString  (Course) returns (Course){}
-rpc ReplyCourseToString (Course) returns (CourseReply){}
-    }
+service grpcClient {
+  rpc CourseToString  (Course) returns (Course){}
+  rpc ReplyCourseToString (Course) returns (CourseReply){}
+}
 
 
 message Course{
