@@ -3,16 +3,19 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"math"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 var courses = make([]*Course, 0)
 var students = make([]*Student, 0)
 var teachers = make([]*Teacher, 0)
+
+var id int
 
 func coursePutTeacherStudentHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -51,7 +54,7 @@ func coursePutTeacherStudentHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		course.Teachers = append(course.Teachers, teacher)
-	} else if searchType == "STUDENT"{
+	} else if searchType == "STUDENT" {
 		studentId, error := strconv.Atoi(vars["id"])
 
 		if error != nil {
@@ -209,8 +212,10 @@ func coursePostHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(math.MaxInt)
 
 	name := r.FormValue("name")
-	course := &Course{Id: len(courses) + 1, Name: name, Students: make([]*Student, 0), Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: 0}
+	course := &Course{Id: id + 1, Name: name, Students: make([]*Student, 0), Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: 0}
 	courses = append(courses, course)
+
+	id = id + 1
 
 	w.Write([]byte("{\"status\": true}"))
 	w.WriteHeader(200)
@@ -223,7 +228,9 @@ func courseGetHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fmt.Println("Starting now...")
 
-	courses = append(courses, &Course{Students: make([]*Student, 0), Name: "DISYS", Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: 10})
+	courses = append(courses, &Course{Id: id + 1, Name: "DISYS", Students: make([]*Student, 0), Teachers: make([]*Teacher, 0), SatisfactionRatingAvg: 10})
+
+	id = id + 1
 
 	r := mux.NewRouter()
 	r.HandleFunc("/courses/{courseId}/{type}/{id}", courseDeleteTeacherStudentHandler).Methods("DELETE")
